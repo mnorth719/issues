@@ -2,7 +2,7 @@
 defmodule Issues.CLI do
   @default_count 4
 
-  import Issues.Printer
+  import Issues.TableFormatter
 
   @moduledoc """
   Handle the command line parsing and the dispatch to
@@ -28,7 +28,7 @@ defmodule Issues.CLI do
     |> decode_response()
     |> sort_response_desc()
     |> Enum.take(count)
-    |> print()
+    |> print_table_for_columns(["title", "html_url"])
   end
 
   defp decode_response( { :ok, body } ), do: body
