@@ -1,14 +1,13 @@
-#---
+# ---
 # Excerpted from "Programming Elixir ≥ 1.6",
 # published by The Pragmatic Bookshelf.
 # Copyrights apply to this code. It may not be used to create training material,
 # courses, books, articles, and the like. Contact us if you are in doubt.
 # We make no guarantees that this code is fit for any purpose.
 # Visit http://www.pragmaticprogrammer.com/titles/elixir16 for more book information.
-#---
+# ---
 defmodule Issues.TableFormatter do
-
-  import Enum, only: [ each: 2, map: 2, map_join: 3, max: 1 ]
+  import Enum, only: [each: 2, map: 2, map_join: 3, max: 1]
 
   @doc """
   Takes a list of row data, where each row is a Map, and a list of
@@ -20,12 +19,11 @@ defmodule Issues.TableFormatter do
   """
   def print_table_for_columns(rows, headers) do
     with data_by_columns = split_into_columns(rows, headers),
-         column_widths   = widths_of(data_by_columns),
-         format          = format_for(column_widths)
-    do
-         puts_one_line_in_columns(headers, format)
-         IO.puts(separator(column_widths))
-         puts_in_columns(data_by_columns, format)
+         column_widths = widths_of(data_by_columns),
+         format = format_for(column_widths) do
+      puts_one_line_in_columns(headers, format)
+      IO.puts(separator(column_widths))
+      puts_in_columns(data_by_columns, format)
     end
   end
 
@@ -105,7 +103,7 @@ defmodule Issues.TableFormatter do
   """
   def puts_in_columns(data_by_columns, format) do
     data_by_columns
-    |> List.zip
+    |> List.zip()
     |> map(&Tuple.to_list/1)
     |> each(&puts_one_line_in_columns(&1, format))
   end

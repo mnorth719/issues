@@ -1,4 +1,3 @@
-
 defmodule Issues.CLI do
   @default_count 4
 
@@ -17,13 +16,14 @@ defmodule Issues.CLI do
   end
 
   def process(:help) do
-    IO.puts """
+    IO.puts("""
     usage: issues <user> <project> [ count | #{@default_count} ]
-    """
+    """)
+
     System.halt(0)
   end
 
-  def process( { user, project, count } ) do
+  def process({user, project, count}) do
     Issues.GithubIssues.fetch(user, project)
     |> decode_response()
     |> sort_response_desc()
@@ -31,19 +31,21 @@ defmodule Issues.CLI do
     |> print_table_for_columns(["title", "html_url"])
   end
 
-  defp decode_response( { :ok, body } ), do: body
-  defp decode_response( { :error, err } ) do
-    IO.puts """
+  defp decode_response({:ok, body}), do: body
+
+  defp decode_response({:error, err}) do
+    IO.puts("""
     Error fetching from github: #{err}
-    """
+    """)
+
     System.halt(2)
   end
 
   defp sort_response_desc(issues) do
     issues
     |> Enum.sort(fn lhs, rhs ->
-        lhs["created_at"] >= rhs["created_at"]
-      end)
+      lhs["created_at"] >= rhs["created_at"]
+    end)
   end
 
   @spec parse_args([binary]) :: :help | {binary, binary, integer}
@@ -59,20 +61,19 @@ defmodule Issues.CLI do
   def parse_args(argv) do
     OptionParser.parse(
       argv,
-      switches: [ hel: :boolean],
-      aliases: [ h: :help ]
+      switches: [hel: :boolean],
+      aliases: [h: :help]
     )
     |> elem(1)
     |> args_to_internal_rep()
   end
 
-
   defp args_to_internal_rep([user, project, count]) do
-    { user, project, String.to_integer(count) }
+    {user, project, String.to_integer(count)}
   end
 
   defp args_to_internal_rep([user, project]) do
-    { user, project, @default_count }
+    {user, project, @default_count}
   end
 
   defp args_to_internal_rep(_) do
