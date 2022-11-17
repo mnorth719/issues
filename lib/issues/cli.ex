@@ -2,13 +2,15 @@
 defmodule Issues.CLI do
   @default_count 4
 
+  import Issues.Printer
+
   @moduledoc """
   Handle the command line parsing and the dispatch to
   various functions that end up generating n issues
   in a github project.
   """
 
-  def run(argv) do
+  def main(argv) do
     argv
     |> parse_args
     |> process
@@ -21,9 +23,12 @@ defmodule Issues.CLI do
     System.halt(0)
   end
 
-  def process( { user, project, _count } ) do
+  def process( { user, project, count } ) do
     Issues.GithubIssues.fetch(user, project)
     |> decode_response()
+    |> sort_response_desc()
+    |> Enum.take(count)
+    |> print()
   end
 
   defp decode_response( { :ok, body } ), do: body
@@ -34,6 +39,14 @@ defmodule Issues.CLI do
     System.halt(2)
   end
 
+  defp sort_response_desc(issues) do
+    issues
+    |> Enum.sort(fn lhs, rhs ->
+        lhs["created_at"] >= rhs["created_at"]
+      end)
+  end
+
+  @spec parse_args([binary]) :: :help | {binary, binary, integer}
   @doc """
   `argv` can be -h or --help, which returns :help
 
@@ -54,15 +67,15 @@ defmodule Issues.CLI do
   end
 
 
-  def args_to_internal_rep([user, project, count]) do
+  defp args_to_internal_rep([user, project, count]) do
     { user, project, String.to_integer(count) }
   end
 
-  def args_to_internal_rep([user, project]) do
+  defp args_to_internal_rep([user, project]) do
     { user, project, @default_count }
   end
 
-  def args_to_internal_rep(_) do
+  defp args_to_internal_rep(_) do
     :help
   end
 end

@@ -1,4 +1,6 @@
 defmodule Issues.GithubIssues do
+  require Logger
+
   @user_agent [ { "User-Agent", "mattkit" } ]
   @github_url Application.compile_env(:issues, :github_url, "")
 
@@ -9,10 +11,7 @@ defmodule Issues.GithubIssues do
   end
 
   def issues_url(user, project) do
-    IO.puts """
-    getting issues at
-    "#{@github_url}/repos/#{user}/#{project}/issues"
-    """
+    Logger.info("getting issues at #{@github_url}/repos/#{user}/#{project}/issues")
     "#{@github_url}/repos/#{user}/#{project}/issues"
   end
 
